@@ -1,22 +1,30 @@
 import { ethers } from "hardhat";
+import { GoldToken, GoldToken__factory, Vault, Vault__factory } from "../typechain-types";
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+const main = async (): Promise <void> => {
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  const tokenFactory: GoldToken__factory = await ethers.getContractFactory("GoldToken");
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  const deployedTokenFactory: GoldToken = await tokenFactory.deploy(1000);
 
-  await lock.deployed();
+  await deployedTokenFactory.deployed();
 
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
+  const goldTokenAddress: string = deployedTokenFactory.address
+
+  console.log("GOLD TOKEN ADDRESS: ", goldTokenAddress);
+  
+  const vaultContractFactory: Vault__factory = await ethers.getContractFactory("Vault");
+
+  const deployedVaultContract: Vault = await vaultContractFactory.deploy(goldTokenAddress);
+
+  await deployedVaultContract.deployed();
+
+  const vaultContractAddress: string = deployedVaultContract.address
+
+  console.log("Vault Contract Address: ", vaultContractAddress)
+
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
