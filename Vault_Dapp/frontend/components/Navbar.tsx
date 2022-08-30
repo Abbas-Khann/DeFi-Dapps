@@ -5,13 +5,13 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Navbar = () => {
   return (
-    <nav className='flex items-center justify-center px-6 py-4 '>
+    <nav className='flex items-center justify-center px-6 py-4 bg-[#9eeaf9] shadow-2xl'>
         <Head>
              <style>
                @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@600&display=swap');
              </style>
         </Head>
-        <h1 className=' text-xl'>Vault Dapp</h1>
+        <h1 className='text-xl sm:text-3xl'>Vault Dapp</h1>
         <div className='flex flex-auto justify-end items-center px-4'>
         <BsLightbulbFill className='text-3xl cursor-pointer mr-4'/>
         <ConnectButton />
