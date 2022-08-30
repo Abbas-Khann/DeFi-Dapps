@@ -5,7 +5,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Navbar = () => {
   return (
-    <nav className='flex items-center justify-center px-6 py-4 bg-[#9eeaf9] shadow-2xl'>
+    <nav className='flex items-center justify-center px-6 py-4 bg-gradient-to-r from-[#b7c3d3] to-[whitesmoke] shadow-2xl'>
         <Head>
              <style>
                @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@600&display=swap');
