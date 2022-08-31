@@ -26,18 +26,18 @@ const Home: NextPage = () => {
       )
     }
     else if(loading) {
-      return <button className='px-4 py-2 border-2 transition duration-300 motion-safe:animate-spin ease-out text-3xl rounded hover:text-white mb-3'>
+      return <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-spin ease-out text-3xl rounded hover:text-white mb-3'>
         Loading...
       </button>
     }
     else if(isApproved) {
-      return <button className='px-4 py-2 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'>Deposit</button>
+      return <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'>Deposit</button>
     }
     else if(isDeposited) {
-      return <button className='px-4 py-2 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'>Withdraw</button>
+      return <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'>Withdraw</button>
     }
     else {
-      return <button className='px-4 py-2 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'>Approve</button>
+      return <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'>Approve</button>
     }
   }
   return (
