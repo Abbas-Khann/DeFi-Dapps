@@ -45,7 +45,12 @@ const Home: NextPage = () => {
     <Navbar toggleDarkMode={toggleDarkMode} darkMode={darkMode}/>
     <section className='dark:bg-gradient-to-r from-[#121212] to-[#002B5B] dark:text-white min-h-screen'>
       <div className='flex justify-center'>
-        <h3 className='text-2xl pt-12 inline-block border-b-4 border-[#7084a0] sm:text-4xl '>Double Your Tokens with the Vault</h3>
+        <h3 className='text-2xl pt-12 inline-block text-black border-b-4 border-[#7084a0] sm:text-5xl font-bold 
+            dark:bg-gradient-to-r dark:bg-clip-text dark:text-transparent 
+            dark:from-red-400 dark:via-purple-500 dark:to-green-400
+            dark:animate-text
+        
+        '>Double Your Tokens with the Vault</h3>
       </div>
       <div className='sm:flex sm:items-center sm:justify-center py-16 px-20'>
       <div className=''>
