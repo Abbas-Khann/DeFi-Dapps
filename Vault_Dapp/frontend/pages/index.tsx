@@ -1,24 +1,72 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import Navbar from '../components/Navbar';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, Contract, utils } from 'ethers';
 import { GOLD_TOKEN_CONTRACT_ADDRESS, GOLD_TOKEN_CONTRACT_ABI,
          VAULT_CONTRACT_ADDRESS, VAULT_CONTRACT_ABI } from '../Constants';
+import { useProvider, useSigner, useContract } from 'wagmi';
 
 const Home: NextPage = () => {
 
-  const zero: number = BigNumber.from(0);
+  // const zero: number = BigNumber.from(0);
 
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [isDeposited, setIsDeposited] = useState<boolean>(false);
   const [isWithdrawn, setIsWithdrawn] = useState<boolean>(false);
-  const [tokensAmount, setTokensAmount] = useState<number>(zero);
+  const [tokensToApprove, setTokensToApprove] = useState<number>(0);
+  const [totalSupply, setTotalSupply] = useState<number>(0);
 
   function toggleDarkMode(): void {
     setDarkMode(!darkMode);
   }
+
+  const provider: any = useProvider();
+  const {data: signer} = useSigner();
+  const tokenContract: Contract = useContract({
+    addressOrName: GOLD_TOKEN_CONTRACT_ADDRESS,
+    contractInterface: GOLD_TOKEN_CONTRACT_ABI,
+    signerOrProvider: signer || provider
+  });
+
+  const vaultContract: Contract = useContract({
+    addressOrName: VAULT_CONTRACT_ADDRESS,
+    contractInterface: VAULT_CONTRACT_ABI,
+    signerOrProvider: signer || provider
+  });
+
+  const getTotalSupply = async ():Promise <void> => {
+    try {
+      const total: number = await tokenContract.totalSupply();
+      setTotalSupply(total);
+    } catch (err) {
+      console.log('Error fetching the total Supply')
+      console.error(err)
+    }
+  }
+
+  const approveTokensToVault = async (spender: string, amount: number): Promise<void> => {
+    try {
+      const tx = await tokenContract.approve(spender, amount);
+      setLoading(true);
+      tx.wait()
+      setLoading(false);
+    }
+    catch (err) {
+      console.error(err)
+    }
+  }
+
+  function fetchInputVal(event: any): void {
+    setTokensToApprove(+event.target.value);
+    console.log(tokensToApprove)
+    console.log(typeof(tokensToApprove))
+  }
+
+  useEffect(() => {
+    getTotalSupply();
+  }, [])
 
 
   const renderButton = (): JSX.Element => {
@@ -46,8 +94,10 @@ const Home: NextPage = () => {
       return (
       <div className='flex flex-col w-40 sm:w-40'>
       <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'
+      onClick={() => approveTokensToVault(VAULT_CONTRACT_ADDRESS, tokensToApprove)}
       >Approve</button>
-      <input 
+      <input
+      onChange={fetchInputVal} 
       className=' text-black text-2xl text-center border-2 dark:text-white font-bold dark:bg-gradient-to-r dark:bg-clip-text dark:text-transparent 
       dark:from-red-400 dark:via-purple-500 dark:to-white
       dark:animate-text'
@@ -72,7 +122,7 @@ const Home: NextPage = () => {
       </div>
       <div className='sm:flex sm:items-center sm:justify-center py-16 px-20'>
       <div className=''>
-        <p className='text-2xl sm:text-3xl py-4'>You own 0/1000 Gold Tokens</p>
+        <p className='text-2xl sm:text-3xl py-4'>You own 0/{totalSupply.toString()} Gold Tokens</p>
           {renderButton()}
       </div>
       <div className='sm:ml-28'>
