@@ -17,6 +17,7 @@ const Home: NextPage = () => {
   const [isWithdrawn, setIsWithdrawn] = useState<boolean>(false);
   const [tokensToApprove, setTokensToApprove] = useState<number>(0);
   const [totalSupply, setTotalSupply] = useState<number>(0);
+  const [approvedTokensAmount, setApprovedTokensAmount] = useState<number>(0);
 
   function toggleDarkMode(): void {
     setDarkMode(!darkMode);
@@ -48,7 +49,7 @@ const Home: NextPage = () => {
 
   const approveTokensToVault = async (spender: string, amount: number): Promise<void> => {
     try {
-      const tx = await tokenContract.approve(spender, amount);
+      const tx: any = await tokenContract.approve(spender, amount);
       setLoading(true);
       await tx.wait();
       setIsApproved(true);
@@ -59,6 +60,17 @@ const Home: NextPage = () => {
     }
   }
 
+  const checkApproval = async (_amount: number): Promise<void> => {
+    try {
+      const approved: number = await tokenContract.checkApproval(_amount);
+      setApprovedTokensAmount(+approved);
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  console.table(approvedTokensAmount)
+
   function fetchInputVal(event: any): void {
     setTokensToApprove(+event.target.value);
     console.log(tokensToApprove)
@@ -67,6 +79,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     getTotalSupply();
+    checkApproval(tokensToApprove);
   }, [])
 
 
