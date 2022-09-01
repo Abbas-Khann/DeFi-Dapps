@@ -50,7 +50,8 @@ const Home: NextPage = () => {
     try {
       const tx = await tokenContract.approve(spender, amount);
       setLoading(true);
-      tx.wait()
+      await tx.wait();
+      setIsApproved(true);
       setLoading(false);
     }
     catch (err) {
