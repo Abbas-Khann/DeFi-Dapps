@@ -8,6 +8,10 @@ contract GoldToken is ERC20, ERC20Burnable {
     constructor(uint256 initialSupply) ERC20("Gold", "GLD") {
         _mint(msg.sender, initialSupply);
     }
+
+    function checkApproval(uint256 _amount) public pure returns(uint256) {
+        return _amount;
+    }
 }
 
 /*
