@@ -1,14 +1,20 @@
 import { useState } from 'react';
 import type { NextPage } from 'next';
 import Navbar from '../components/Navbar';
+import { BigNumber, utils } from 'ethers';
+import { GOLD_TOKEN_CONTRACT_ADDRESS, GOLD_TOKEN_CONTRACT_ABI,
+         VAULT_CONTRACT_ADDRESS, VAULT_CONTRACT_ABI } from '../Constants';
 
 const Home: NextPage = () => {
 
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const zero: number = BigNumber.from(0);
+
+  const [darkMode, setDarkMode] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [isDeposited, setIsDeposited] = useState<boolean>(false);
   const [isWithdrawn, setIsWithdrawn] = useState<boolean>(false);
+  const [tokensAmount, setTokensAmount] = useState<number>(zero);
 
   function toggleDarkMode(): void {
     setDarkMode(!darkMode);
@@ -37,7 +43,19 @@ const Home: NextPage = () => {
       return <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'>Withdraw</button>
     }
     else {
-      return <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'>Approve</button>
+      return (
+      <div className='flex flex-col w-40 sm:w-40'>
+      <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'
+      >Approve</button>
+      <input 
+      className=' text-black text-2xl text-center border-2 dark:text-white font-bold dark:bg-gradient-to-r dark:bg-clip-text dark:text-transparent 
+      dark:from-red-400 dark:via-purple-500 dark:to-white
+      dark:animate-text'
+      placeholder='Enter Amount'
+      type="number"
+      />
+      </div>
+      )
     }
   }
   return (
