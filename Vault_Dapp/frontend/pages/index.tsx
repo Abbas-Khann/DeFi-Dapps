@@ -8,8 +8,6 @@ import { useProvider, useSigner, useContract } from 'wagmi';
 
 const Home: NextPage = () => {
 
-  // const zero: number = BigNumber.from(0);
-
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [isApproved, setIsApproved] = useState<boolean>(false);
@@ -20,6 +18,7 @@ const Home: NextPage = () => {
   const [approvedTokensAmount, setApprovedTokensAmount] = useState<number>(0);
   const [depositedTokensAmount, setDepositedTokensAmount] = useState<number>(0);
   const [inputValue, setInputValue] = useState<number>(0);
+  const [totalSupplyAtWithdrawal, setTotalSupplyAtWithdrawal] = useState<number>(0);
 
   function toggleDarkMode(): void {
     setDarkMode(!darkMode);
@@ -93,6 +92,7 @@ const Home: NextPage = () => {
       setLoading(true);
       await tx.wait();
       setLoading(false)
+      setDepositedTokensAmount(_amount)
       setIsDeposited(true);
     }
     catch(err: any) {
@@ -104,6 +104,7 @@ const Home: NextPage = () => {
   const totalSupplyAtVault = async (): Promise<void> => {
     try {
       const total: number = await vaultContract.totalSupply();
+      setDepositedTokensAmount(total)
       setTotalSupply(total)
       if(total > 0 || totalSupply) {
         setIsDeposited(true)
@@ -112,6 +113,36 @@ const Home: NextPage = () => {
      catch (err: any) {
       alert(err.reason);
       console.error(err)
+    }
+  }
+
+  const withdrawTokens = async (_amount: number): Promise<void> => {
+    try {
+      const total: number = await tokenContract.totalSupply();
+      const tx: any = await vaultContract.withdraw(_amount);
+      const half: number = Math.floor(_amount / 2);
+      setLoading(true);
+      await tx.wait();
+      setLoading(false)
+      await burnTokens(half)
+      setTotalSupplyAtWithdrawal(total);
+      setIsWithdrawn(true);
+    } 
+    catch 
+    (err: any) {
+    alert(err.reason);
+    console.error(err);
+    }
+  }
+
+  const burnTokens = async (_amount: number): Promise <void> => {
+    try {
+      const tx: any = await tokenContract.burn(_amount);
+      await tx.wait()
+    } 
+    catch (err: any) {
+    alert(err.reason)  
+    console.error(err)  
     }
   }
 
@@ -143,9 +174,9 @@ const Home: NextPage = () => {
     if(isWithdrawn) {
       return (
       <div>
-      <p className='text-2xl sm:text-3xl py-4'>You own {totalSupply.toString()} Gold Tokens now</p>
+      <p className='text-2xl sm:text-3xl py-4'>You own {totalSupplyAtWithdrawal.toString()} Gold Tokens now</p>
       <p className='transition duration-300 ease-out hover:ease-in text-3xl rounded py-2 dark:text-white mb-3'>
-      Astaghfirullah!!! You haram khor you wanted to commit Riba????<br /> Your tokens have been halved now for sinning.
+      Astaghfirullah!!! You haram khor you wanted to commit Riba????<br /> The amount of tokens you wanted to withdraw and double have been halved now as a PUNISHMENT for Sinning..
       </p>
       </div>
       )
@@ -179,7 +210,19 @@ const Home: NextPage = () => {
       return (
         <div>
           <p className='text-2xl sm:text-3xl py-4'>{depositedTokensAmount.toString()}/{tokensToApprove.toString()} Tokens have been deposited</p>
-          <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'>Withdraw</button>
+          <div className='flex flex-col w-40'>
+          <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'
+          onClick={() => withdrawTokens(totalSupply)}
+          >Withdraw</button>
+          {/* <input
+          onChange={fetchInputValue} 
+          className=' text-black text-2xl text-center border-2 dark:text-white font-bold dark:bg-gradient-to-r dark:bg-clip-text dark:text-transparent 
+          dark:from-red-400 dark:via-purple-500 dark:to-white
+          dark:animate-text sm:w-40'
+          placeholder='Enter Amount'
+          type="number"
+          /> */}
+          </div>
         </div>
         )
     }
