@@ -104,7 +104,10 @@ const Home: NextPage = () => {
   const totalSupplyAtVault = async (): Promise<void> => {
     try {
       const total: number = await vaultContract.totalSupply();
-      console.log(total.toString())
+      setTotalSupply(total)
+      if(total > 0 || totalSupply) {
+        setIsDeposited(true)
+      }
     }
      catch (err: any) {
       alert(err.reason);
