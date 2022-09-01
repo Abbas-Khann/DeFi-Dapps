@@ -214,14 +214,6 @@ const Home: NextPage = () => {
           <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'
           onClick={() => withdrawTokens(totalSupply)}
           >Withdraw</button>
-          {/* <input
-          onChange={fetchInputValue} 
-          className=' text-black text-2xl text-center border-2 dark:text-white font-bold dark:bg-gradient-to-r dark:bg-clip-text dark:text-transparent 
-          dark:from-red-400 dark:via-purple-500 dark:to-white
-          dark:animate-text sm:w-40'
-          placeholder='Enter Amount'
-          type="number"
-          /> */}
           </div>
         </div>
         )
