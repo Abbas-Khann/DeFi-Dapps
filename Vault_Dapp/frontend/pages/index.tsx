@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import Navbar from '../components/Navbar';
-import { BigNumber, Contract, utils } from 'ethers';
+import { Contract } from 'ethers';
 import { GOLD_TOKEN_CONTRACT_ADDRESS, GOLD_TOKEN_CONTRACT_ABI,
          VAULT_CONTRACT_ADDRESS, VAULT_CONTRACT_ABI } from '../Constants';
 import { useProvider, useSigner, useContract } from 'wagmi';
@@ -94,6 +94,9 @@ const Home: NextPage = () => {
       setLoading(false)
       setDepositedTokensAmount(_amount)
       setIsDeposited(true);
+      if(depositedTokensAmount > 0) {
+        setIsDeposited(true)
+      }
     }
     catch(err: any) {
       alert(err.reason)
@@ -106,7 +109,7 @@ const Home: NextPage = () => {
       const total: number = await vaultContract.totalSupply();
       setDepositedTokensAmount(total)
       setTotalSupply(total)
-      if(total > 0 || totalSupply) {
+      if(total > 0) {
         setIsDeposited(true)
       }
     }
@@ -157,13 +160,12 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     getTotalSupply();
-    // checkApproval(2)
     checkIfApproved();
   }, [])
 
   useEffect(() => {
     totalSupplyAtVault();
-  }, [totalSupplyAtVault, isDeposited])
+  }, [totalSupplyAtVault])
 
   setTimeout(() => {
     checkIfApproved()
@@ -176,7 +178,7 @@ const Home: NextPage = () => {
       <div>
       <p className='text-2xl sm:text-3xl py-4'>You own {totalSupplyAtWithdrawal.toString()} Gold Tokens now</p>
       <p className='transition duration-300 ease-out hover:ease-in text-3xl rounded py-2 dark:text-white mb-3'>
-      Astaghfirullah!!! You haram khor you wanted to commit Riba????<br /> The amount of tokens you wanted to withdraw and double have been halved now as a PUNISHMENT for Sinning..
+      Astaghfirullah!!! You haram khor you wanted to commit Riba????<br /> The amount of tokens you wanted to withdraw and double have been halved now as a PUNISHMENT for sinning.
       </p>
       </div>
       )
@@ -189,7 +191,7 @@ const Home: NextPage = () => {
     else if(isApproved) {
       return (
         <div>
-          <p className='text-2xl sm:text-3xl py-4'>{tokensToApprove.toString()}/{totalSupply.toString()} Tokens have been approved</p>
+          <p className='text-2xl sm:text-3xl py-4'>{tokensToApprove.toString()}/1000 Tokens have been approved</p>
           <div className='flex flex-col w-40'>
           <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'
           onClick={() => depositTokens(inputValue)}
@@ -209,7 +211,7 @@ const Home: NextPage = () => {
     else if(isDeposited) {
       return (
         <div>
-          <p className='text-2xl sm:text-3xl py-4'>{depositedTokensAmount.toString()}/{tokensToApprove.toString()} Tokens have been deposited</p>
+          <p className='text-2xl sm:text-3xl py-4'>{depositedTokensAmount.toString()} Tokens have been deposited</p>
           <div className='flex flex-col w-40'>
           <button className='px-4 py-2 my-1 border-2 transition duration-300 motion-safe:animate-bounce ease-out hover:ease-in hover:bg-gradient-to-r from-[#5463FF] to-[#89CFFD] text-3xl rounded hover:text-white mb-3'
           onClick={() => withdrawTokens(totalSupply)}
