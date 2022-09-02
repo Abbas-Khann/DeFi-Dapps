@@ -55,7 +55,7 @@ const Home: NextPage = () => {
       await tx.wait();
       setLoading(false);
       setIsApproved(true);
-      checkApproval(amount)
+      await checkApproval(amount)
     }
     catch (err: any) {
       alert(err.reason)
@@ -93,6 +93,7 @@ const Home: NextPage = () => {
       await tx.wait();
       setLoading(false)
       setDepositedTokensAmount(_amount)
+      setIsDeposited(true);
       await totalSupplyAtVault();
       setIsDeposited(true);
       if(depositedTokensAmount > 0) {
@@ -107,11 +108,16 @@ const Home: NextPage = () => {
 
   const totalSupplyAtVault = async (): Promise<void> => {
     try {
-      const total: number = await vaultContract.totalSupply();
+      const total = await vaultContract.totalSupply();
       setDepositedTokensAmount(total)
       setTotalSupply(total)
-      if(total > 0) {
+      if(total.toString() !== "0") {
         setIsDeposited(true)
+      }
+      else {
+        if(total.toNumber() > 0) {
+          setIsDeposited(true);
+        }
       }
     }
      catch (err: any) {
@@ -166,7 +172,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     totalSupplyAtVault();
-  }, [totalSupplyAtVault])
+  }, [depositedTokensAmount])
 
   setTimeout(() => {
     checkIfApproved()
