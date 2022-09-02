@@ -93,6 +93,7 @@ const Home: NextPage = () => {
       await tx.wait();
       setLoading(false)
       setDepositedTokensAmount(_amount)
+      await totalSupplyAtVault();
       setIsDeposited(true);
       if(depositedTokensAmount > 0) {
         setIsDeposited(true)
@@ -178,7 +179,7 @@ const Home: NextPage = () => {
       <div>
       <p className='text-2xl sm:text-3xl py-4'>You own {totalSupplyAtWithdrawal.toString()} Gold Tokens now</p>
       <p className='transition duration-300 ease-out hover:ease-in text-3xl rounded py-2 dark:text-white mb-3'>
-      Astaghfirullah!!! You haram khor you wanted to commit Riba????<br /> The amount of tokens you wanted to withdraw and double have been halved now as a PUNISHMENT for sinning.
+      Astaghfirullah!!! You haram khor, <br /> you wanted to commit Riba????<br /> Your tokens have been decreased now <br /> as a PUNISHMENT for sinning.
       </p>
       </div>
       )
