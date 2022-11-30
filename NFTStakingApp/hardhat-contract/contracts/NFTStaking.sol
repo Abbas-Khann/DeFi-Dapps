@@ -9,16 +9,16 @@ contract MyToken is Staking721Base {
     // User can only withdraw their NFT after 30 days of time limit is reached
     // User can earn staking rewards anytime
         
-      uint256 lockTime = block.timestamp + 30 days;
-      event Withdraw(address withdrawer, bool successfull);
-      event NewTimeUnit(uint256 newTime);
+      mapping (uint256 => bool) public nftLocked;
+      mapping (uint256 => uint256) public nftLockTime;
 
       constructor(
+        uint256 _timeUnit,
         address _nftCollection,
         address _rewardToken
         )
         Staking721Base(
-            lockTime,
+            uint256(_timeUnit),
             100,
             address(_nftCollection),
             address(_rewardToken) 
@@ -26,21 +26,58 @@ contract MyToken is Staking721Base {
     {}
 
 
-    // withdrawing the _setTimeUnit function here
-    function _setTimeUnit(uint256 _lockTime) internal override {
-        lockTime = _lockTime;
+    // // withdrawing the _setTimeUnit function here
+    // function _setTimeUnit(uint256 _lockTime) internal override {
+    //     lockTime = _lockTime;
+    // }
+
+    // // changing the locktie state back to 30 days or more since we don't want the
+    // // the user to keep deploying a new contract and they can just stake the nft within
+    // // the same contract again after the first 30 days are over
+    // function setTimeUnit(uint256 _lockTime) external {
+    //     require(
+    //         _lockTime >= block.timestamp + 30 days,
+    //         "The time you set should be greater than or equal to 30 days"
+    //     );
+    //     _setTimeUnit(_lockTime);
+    //     emit NewTimeUnit(newTime);
+    // }
+
+    function _stake(uint256[] calldata _tokenIds) internal override {
+        uint256 len = _tokenIds.length;
+        require(len != 0, "Staking 0 tokens");
+
+        address _nftCollection = nftCollection;
+
+        if (stakers[msg.sender].amountStaked > 0) {
+            _updateUnclaimedRewardsForStaker(msg.sender);
+        } else {
+            stakersArray.push(msg.sender);
+            stakers[msg.sender].timeOfLastUpdate = block.timestamp;
+        }
+        for (uint256 i = 0; i < len; ++i) {
+            require(
+                IERC721(_nftCollection).ownerOf(_tokenIds[i]) == msg.sender &&
+                    (IERC721(_nftCollection).getApproved(_tokenIds[i]) == address(this) ||
+                        IERC721(_nftCollection).isApprovedForAll(msg.sender, address(this))),
+                "Not owned or approved"
+            );
+            IERC721(_nftCollection).transferFrom(msg.sender, address(this), _tokenIds[i]);
+            stakerAddress[_tokenIds[i]] = msg.sender;
+
+            if (!isIndexed[_tokenIds[i]]) {
+                isIndexed[_tokenIds[i]] = true;
+                indexedTokens.push(_tokenIds[i]);
+            }
+            nftLocked[_tokenIds[i]] = true;
+            nftLockTime[_tokenIds[i]] = block.timestamp + 10 minutes;
+        }
+        stakers[msg.sender].amountStaked += len;
+        emit TokensStaked(msg.sender, _tokenIds);
     }
 
-    // changing the locktie state back to 30 days or more since we don't want the
-    // the user to keep deploying a new contract and they can just stake the nft within
-    // the same contract again after the first 30 days are over
-    function setTimeUnit(uint256 _lockTime) external {
-        require(
-            _lockTime >= block.timestamp + 30 days,
-            "The time you set should be greater than or equal to 30 days"
-        );
-        _setTimeUnit(_lockTime);
-        emit NewTimeUnit(newTime);
+    function stakeNft(uint256[] calldata _tokenIds) external {
+        _stake(_tokenIds);
     }
     
 
@@ -66,6 +103,11 @@ contract MyToken is Staking721Base {
 
         for (uint256 i = 0; i < len; ++i) {
             require(stakerAddress[_tokenIds[i]] == msg.sender, "Not staker");
+            require(
+            block.timestamp > nftLockTime[_tokenIds[i]],
+            "You can't withdraw unless your 30 days are completed!"
+            );
+            nftLocked[_tokenIds[i]] = false;
             stakerAddress[_tokenIds[i]] = address(0);
             IERC721(_nftCollection).transferFrom(address(this), msg.sender, _tokenIds[i]);
         }
@@ -73,21 +115,8 @@ contract MyToken is Staking721Base {
         emit TokensWithdrawn(msg.sender, _tokenIds);
     }
 
-        modifier onlyAfterTimeLimit {
-        require(
-            block.timestamp >= lockTime,
-            "You can't withdraw unless your 30 days are completed!"
-        );
-        _;
-    }
-
-    function withdrawNFT(uint256[] calldata _tokenIds) external onlyAfterTimeLimit {
+    function withdrawNFT(uint256[] calldata _tokenIds) external {
         _withdraw(_tokenIds);
-        emit Withdraw(msg.sender, true);
-    }
-
-    function returnLockedTime() public view returns(uint256) {
-        return lockTime;
     }
 
 }

@@ -102,6 +102,10 @@
   max-width: 350px;
 }
 
+.date {
+  margin-top: 17px;
+}
+
 .card:hover,
 .card:focus,
 .card:active {
