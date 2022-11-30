@@ -11,6 +11,7 @@ contract MyToken is Staking721Base {
         
       uint256 lockTime = block.timestamp + 30 days;
       event Withdraw(address withdrawer, bool successfull);
+      event NewTimeUnit(uint256 newTime);
 
       constructor(
         address _nftCollection,
@@ -23,6 +24,24 @@ contract MyToken is Staking721Base {
             address(_rewardToken) 
         )
     {}
+
+
+    // withdrawing the _setTimeUnit function here
+    function _setTimeUnit(uint256 _lockTime) internal override {
+        lockTime = _lockTime;
+    }
+
+    // changing the locktie state back to 30 days or more since we don't want the
+    // the user to keep deploying a new contract and they can just stake the nft within
+    // the same contract again after the first 30 days are over
+    function setTimeUnit(uint256 _lockTime) external {
+        require(
+            _lockTime >= block.timestamp + 30 days,
+            "The time you set should be greater than or equal to 30 days"
+        );
+        _setTimeUnit(_lockTime);
+        emit NewTimeUnit(newTime);
+    }
     
 
     function _withdraw(uint256[] calldata _tokenIds) internal override {
