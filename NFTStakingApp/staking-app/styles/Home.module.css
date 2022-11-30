@@ -3,13 +3,39 @@
 }
 
 .main {
-  min-height: 100vh;
+  min-height: 30vh;
   padding: 4rem 0;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.name {
+  font-size: 40px;
+  color: white;
+}
+
+.divCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    margin: 10px;
+    box-shadow: 0px 0px 5px #000000;
+    min-width: 250px;
+    padding: 10px;
+    background: #1ce;
+}
+
+.image {
+  min-width: 100px;
+  max-width: 150px;
+  min-height: 100px;
+  max-height: 150px;
+  position: relative;
 }
 
 .title a {
@@ -35,7 +61,7 @@
 }
 
 .connect {
-  margin-bottom: 2rem;
+  margin-top: 1rem;
   width: 230px;
 }
 
