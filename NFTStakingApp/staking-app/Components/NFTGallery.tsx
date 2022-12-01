@@ -4,7 +4,7 @@ import styles from "../styles/Home.module.css";
 
 const NFTGallery = (): JSX.Element => {
 
-    const connectedWallet = useAddress()
+    const connectedWallet = useAddress();
     const CONTRACT_ADDRESS: string = "0x8cBDAd66D9aAf60190613A06e70642B99d79Ca96";
     
     const { contract } = useContract(CONTRACT_ADDRESS);
