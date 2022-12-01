@@ -21,8 +21,22 @@ const Stake = (): JSX.Element => {
     }
 
     const approveNft = async (): Promise<void> => {
-        const approve = await nftDropContract?.call("approve", STAKING_CONTRACT_ADDRESS, inputValue);
-        await stakeNFT();
+        if(inputValue) {
+            const approve = await nftDropContract?.call("approve", STAKING_CONTRACT_ADDRESS, inputValue);
+            await stakeNFT();
+        }
+        else {
+            alert("Input Token ID")
+        }
+    }
+
+    const withdrawNft = async (): Promise<void> => {
+        if(inputValue) {
+            const withdraw = await contract?.call("withdrawNFT", inputValue);
+        }
+        else {
+            alert("Input Token ID to Withdraw")
+        }
     }
 
 
@@ -55,6 +69,7 @@ const Stake = (): JSX.Element => {
                 <br />
                 <button
                 className={`${styles.mainButton} ${styles.spacerTop}`}
+                onClick={withdrawNft}
                 >
                     Withdraw
                 </button>
