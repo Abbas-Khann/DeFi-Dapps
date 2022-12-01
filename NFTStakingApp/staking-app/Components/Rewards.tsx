@@ -6,7 +6,6 @@ const Rewards = (): JSX.Element => {
 
     const STAKING_CONTRACT_ADDRESS : string = "0x678deE906a62f540a33156fe54dd8b321a37fB1B";
     const { contract } = useContract(STAKING_CONTRACT_ADDRESS);
-    console.log(contract)
 
     const claimRewards = async (): Promise<void> => {
         const claim = await contract?.call("claimRewards");
