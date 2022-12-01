@@ -1,7 +1,6 @@
 import { ConnectWallet } from "@thirdweb-dev/react";
 import type { NextPage } from "next";
 import NFTGallery from "../Components/NFTGallery";
-import TimeLimit from "../Components/TimeLimit";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
@@ -21,12 +20,11 @@ const Home: NextPage = () => {
           <code className={styles.code}>Staking rewards</code> for the whole month
         </p>
         <div>
-          <TimeLimit />
         </div>
-        {/* <div>
+        <div>
         <h2>NFT Gallery</h2>
         <NFTGallery />
-        </div> */}
+        </div>
       </main>
     </div>
   );
