@@ -1,7 +1,6 @@
 import { ConnectWallet } from "@thirdweb-dev/react";
 import type { NextPage } from "next";
 import Rewards from "../Components/Rewards";
-import NFTGallery from "../Components/NFTGallery";
 import Stake from "../Components/Stake";
 import styles from "../styles/Home.module.css";
 
@@ -25,7 +24,6 @@ const Home: NextPage = () => {
         </div>
         <div>
         {/* <h2>NFT Gallery</h2> */}
-        <NFTGallery />
         <Stake />
         <Rewards />
         </div>

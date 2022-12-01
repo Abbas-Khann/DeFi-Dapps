@@ -160,30 +160,11 @@
   margin-top: 16px;
 }
 
-.tokenItem {
-  width: 35%;
-  height: 120px;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  gap: 16px;
-}
-
 .tokenLabel {
   margin-top: 0px;
   margin-bottom: 0px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.7);
-}
-
-.tokenValue {
-  font-size: 1.3rem;
-  margin-top: 8px;
-  margin-bottom: 0px;
-  font-weight: 500;
 }
 
 /* On Mobile, make tokenGrid 100% width */
