@@ -23,7 +23,6 @@ const Home: NextPage = () => {
         <div>
         </div>
         <div>
-        {/* <h2>NFT Gallery</h2> */}
         <Stake />
         <Rewards />
         </div>
