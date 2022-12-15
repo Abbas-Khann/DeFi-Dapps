@@ -52,7 +52,7 @@ contract MyToken is Staking721Base {
                 indexedTokens.push(_tokenIds[i]);
             }
             nftLocked[_tokenIds[i]] = true;
-            nftLockTime[_tokenIds[i]] = block.timestamp + 10 minutes;
+            nftLockTime[_tokenIds[i]] = block.timestamp + 30 days;
         }
         stakers[msg.sender].amountStaked += len;
         emit TokensStaked(msg.sender, _tokenIds);
