@@ -18,7 +18,7 @@ contract MyToken is Staking721Base {
         address _rewardToken
         )
         Staking721Base(
-            uint256(_timeUnit),
+            uint256(1 days),
             100,
             address(_nftCollection),
             address(_rewardToken) 
