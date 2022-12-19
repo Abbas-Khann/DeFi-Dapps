@@ -10,8 +10,10 @@ const Stake = (): JSX.Element => {
     const [inputValue, setInputValue] = useState<number>();
     // pasting the contract address and the type
     const { contract } = useContract(STAKING_CONTRACT_ADDRESS, "custom");
+    console.log("Contract here", contract)
     // adding the type of the contract and the address here again
     const { contract: nftDropContract } = useContract(NFT_CONTRACT_ADDRESS, "nft-drop");
+
 
     // picking up the value using this function and converting it into a number with the +
     function handleChange(e: any): void {
