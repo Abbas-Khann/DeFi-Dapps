@@ -17,8 +17,7 @@ const Home: NextPage = () => {
 
         <p className={styles.description}>
           Stake your NFT(ERC721) Token for{" "}
-          <code className={styles.code}>30 or more days</code>, And Win{" "}
-          <code className={styles.code}>Staking rewards</code> for the whole month
+          30 days and earn Staking rewards for the whole month
         </p>
         <div>
         </div>
