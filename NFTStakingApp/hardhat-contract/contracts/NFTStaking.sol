@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@thirdweb-dev/contracts/base/Staking721Base.sol";
 
-contract MyToken is Staking721Base {
+contract NFTStaker is Staking721Base {
 
     // This contract allows users to stake their nft for 30 days
     // User can only withdraw their NFT after 30 days of time limit is reached
