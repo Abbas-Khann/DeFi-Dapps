@@ -4,13 +4,17 @@ import {useContract} from "@thirdweb-dev/react";
 
 const Rewards = (): JSX.Element => {
 
-    const STAKING_CONTRACT_ADDRESS : string = "0x678deE906a62f540a33156fe54dd8b321a37fB1B";
+    const STAKING_CONTRACT_ADDRESS : string = "0xDd22afB50D50708143214060aDdEA64B8444298E";
     // pasting the staking contract address variable in the useContract hook
     const { contract } = useContract(STAKING_CONTRACT_ADDRESS);
 
     // claimRewards will be an async function and it will call the claimRewards function from the staking contract
     const claimRewards = async (): Promise<void> => {
-        const claim = await contract?.call("claimRewards");
+        try {
+            const claim = await contract?.call("claimRewards");
+        } catch (err) {
+            console.error(err)
+        }
     }
     
     return(

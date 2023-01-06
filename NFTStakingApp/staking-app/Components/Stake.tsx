@@ -4,8 +4,8 @@ import { useContract } from "@thirdweb-dev/react";
 
 const Stake = (): JSX.Element => {
 
-    const STAKING_CONTRACT_ADDRESS = "0x678deE906a62f540a33156fe54dd8b321a37fB1B";
-    const NFT_CONTRACT_ADDRESS = "<paste-NFT-contract-address-here>";
+    const STAKING_CONTRACT_ADDRESS = "0xDd22afB50D50708143214060aDdEA64B8444298E";
+    const NFT_CONTRACT_ADDRESS = "0x3D14251a40b92cA69a0Fca961C6D792cdD081a67";
     // taking the input value in this state
     const [inputValue, setInputValue] = useState<number>();
     // pasting the contract address and the type
@@ -23,30 +23,34 @@ const Stake = (): JSX.Element => {
     // stakeNFT will be used to Stake the NFT
     const stakeNFT = async (): Promise<void> => {
         // calling the stakeNft function from the contract and passing in the inputValue state
-        const stake = await contract?.call("stakeNft", inputValue)
+        try {
+            const stake = await contract?.call("stakeNft", inputValue)
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     // The token needs to be approved before it can be used for staking so we will approve the particular NFT before performing the staking
     const approveNft = async (): Promise<void> => {
-        if(inputValue) {
-            // Here we are approving the NFT to the staking contract with the tokenID
-            const approve = await nftDropContract?.call("approve", STAKING_CONTRACT_ADDRESS, inputValue);
-            await stakeNFT();
-        }
-        else {
-            alert("Input Token ID")
+        try {
+                // Here we are approving the NFT to the staking contract with the tokenID
+                const approve = await nftDropContract?.call("approve", STAKING_CONTRACT_ADDRESS, inputValue);
+                await stakeNFT();
+        } catch (err) {
+            console.error(err)
         }
     }
 
     // NFT withdrawal here
     const withdrawNft = async (): Promise<void> => {
-        if(inputValue) {
-            // similar process as the stakeNft function but this will withdraw the NFT 
+        try {
+            // similar process as the stakeNft function but this will withdraw the NFT
             const withdraw = await contract?.call("withdrawNFT", inputValue);
+        } 
+        catch (err) {
+            console.error(err)    
         }
-        else {
-            alert("Input Token ID to Withdraw")
-        }
+        
     }
 
 
