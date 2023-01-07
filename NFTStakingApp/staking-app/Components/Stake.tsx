@@ -1,6 +1,6 @@
-import React,{ useState } from "react";
+import React,{ useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
-import { useContract } from "@thirdweb-dev/react";
+import { useContract, useOwnedNFTs, useAddress } from "@thirdweb-dev/react";
 
 const Stake = (): JSX.Element => {
 
@@ -10,15 +10,17 @@ const Stake = (): JSX.Element => {
     const [inputValue, setInputValue] = useState<number>();
     // pasting the contract address and the type
     const { contract } = useContract(STAKING_CONTRACT_ADDRESS, "custom");
-    console.log("Contract here", contract)
     // adding the type of the contract and the address here again
     const { contract: nftDropContract } = useContract(NFT_CONTRACT_ADDRESS, "nft-drop");
+    const address = useAddress();
 
-
+    const { data: ownedNFTs, isLoading, error } = useOwnedNFTs(nftDropContract, address)
+    console.log(ownedNFTs)
     // picking up the value using this function and converting it into a number with the +
     function handleChange(e: any): void {
         setInputValue(+e.target.value);
     }
+    // within the multiselect when the user checks the ownedNft number we will push that particular number into the inputvalue array and then pop it when the user unchecks it
 
     // stakeNFT will be used to Stake the NFT
     const stakeNFT = async (): Promise<void> => {
@@ -52,7 +54,6 @@ const Stake = (): JSX.Element => {
         }
         
     }
-
 
     return(
         <div className={styles.tokenGrid}>
