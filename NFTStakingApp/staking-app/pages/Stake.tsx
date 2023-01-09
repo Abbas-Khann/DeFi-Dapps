@@ -3,13 +3,11 @@ import {
     useAddress,
     useContract,
     useContractWrite,
-    useMetamask,
     useOwnedNFTs,
-    useTokenBalance,
   } from "@thirdweb-dev/react";
   import { ConnectWallet } from "@thirdweb-dev/react";
   import { NFT } from "@thirdweb-dev/sdk";
-  import { BigNumber, ethers } from "ethers";
+  import { BigNumber } from "ethers";
   import type { NextPage } from "next";
   import { useEffect, useState } from "react";
   import { NFT_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS} from "../const/Index";
@@ -29,7 +27,27 @@ import {
     );
     const [stakedNfts, setStakedNfts] = useState<NFT[]>([]);
     const [claimableRewards, setClaimableRewards] = useState<BigNumber>();
+    const [checkedCheckboxes, setCheckedCheckboxes] = useState<any[]>([])
+    const handleCheckboxChange = (data: any) => {
+        console.log("checkedCheckboxes", checkedCheckboxes)
+        console.log(data)
+        const isChecked = checkedCheckboxes.some(
+          (checkedCheckbox) => checkedCheckbox.value === data.value
+        );
+        console.log(isChecked)
+        if (isChecked) {
+          setCheckedCheckboxes(
+            checkedCheckboxes.filter(
+              (checkedCheckbox) => checkedCheckbox.value !== data.value
+            )
+          );
+        } else {
+          setCheckedCheckboxes(checkedCheckboxes.concat(data));
+        }
+      };
 
+      console.log(stakedNfts, "stakedNFTs")
+      console.log(ownedNfts, "ownedNFts")
     useEffect(() => {
         if (!contract) return;
     
@@ -51,7 +69,6 @@ import {
           loadStakedNfts();
         }
       }, [address, contract, nftDropContract]);
-    
     //   useEffect(() => {
     //     if (!contract || !address) return;
     
@@ -63,9 +80,9 @@ import {
     //     loadClaimableRewards();
     //   }, [address, contract]);
     
-      async function stakeNft(id: string) {
+      async function stakeNft(id: any[]) {
         if (!address) return;
-    
+        console.log(id)
         const isApproved = await nftDropContract?.isApproved(
           address,
           STAKING_CONTRACT_ADDRESS
@@ -76,7 +93,7 @@ import {
         await contract?.call("stakeNft", [id]);
       }
     
-      async function withdraw(id: string) {
+      async function withdraw(id: any[]) {
         await contract?.call("withdrawNFT", [id]);
       }
     
@@ -84,67 +101,83 @@ import {
         return <div>Loading</div>;
       }
 
-    return(
-      <div className={styles.container}>
-      <h1 className={styles.h1}>Lock Your NFTs and Earn rewards</h1>
-      <hr className={`${styles.divider} ${styles.spacerTop}`} />
+      console.log("log outside", checkedCheckboxes)
+      
 
-      {!address ? (
-        <ConnectWallet />
-      ) : (
-        <>
-          <button
-            className={`${styles.mainButton} ${styles.spacerTop}`}
-            // onClick={() => claimRewards([])}
-          >
-            Claim Rewards
-          </button>
-
+      return (
+        <div className={styles.container}>
+          <h1 className={styles.h1}>Lock Your NFTs and earn rewards</h1>
           <hr className={`${styles.divider} ${styles.spacerTop}`} />
-          <h2>Your Staked NFTs</h2>
-          <div className={styles.nftBoxGrid}>
-            {stakedNfts?.map((nft) => (
-              <div className={styles.nftBox} key={nft.metadata.id.toString()}>
-                {nft?.metadata && (
-                  <ThirdwebNftMedia
-                    metadata={nft.metadata}
-                    className={styles.nftMedia}
-                  />
-                )}
-                <h3>{nft.metadata.name}</h3>
-                <button
-                  className={`${styles.mainButton} ${styles.spacerBottom}`}
-                  onClick={() => withdraw(nft.metadata.id)}
-                >
-                  Withdraw
-                </button>
+          {!address ? (
+            <ConnectWallet />
+          ) : (
+            <>
+              <button
+                className={`${styles.mainButton} ${styles.spacerTop}`}
+                onClick={() => claimRewards([])}
+              >
+                Claim Rewards
+              </button>
+    
+              <hr className={`${styles.divider} ${styles.spacerTop}`} />
+              <h2>Your Staked NFTs</h2>
+              <div className={styles.nftBoxGrid}>
+                {stakedNfts?.map((nft, idx) => (
+                  <div className={styles.nftBox} key={nft.metadata.id.toString()}>
+                    {nft?.metadata && (
+                        <ThirdwebNftMedia
+                        metadata={nft.metadata}
+                        className={styles.nftMedia}
+                        />
+                        )}
+                    <input
+                    key={idx}
+                    type="checkbox"
+                    className={styles.checkbox}
+                    onChange={() => handleCheckboxChange(nft.metadata.id)}
+                    />
+                    <h3>{nft.metadata.name}</h3>
+                  </div>
+                ))}
+                    <button
+                      className={`${styles.mainButton} ${styles.spacerBottom}`}
+                      // onClick={} call withdraw here with token ids checked
+                    >
+                      Withdraw
+                    </button>
               </div>
-            ))}
-          </div>
-
-          <hr className={`${styles.divider} ${styles.spacerTop}`} />
-          <h2>Your Unstaked NFTs</h2>
-          <div className={styles.nftBoxGrid}>
-            {ownedNfts?.map((nft) => (
-              <div className={styles.nftBox} key={nft.metadata.id.toString()}>
-                <ThirdwebNftMedia
-                  metadata={nft.metadata}
-                  className={styles.nftMedia}
-                />
-                <h3>{nft.metadata.name}</h3>
-                <button
-                  className={`${styles.mainButton} ${styles.spacerBottom}`}
-                  onClick={() => stakeNft(nft.metadata.id)}
-                >
-                  Stake
-                </button>
+              <hr className={`${styles.divider} ${styles.spacerTop}`} />
+              <h2>Your Unstaked NFTs</h2>
+              <div className={styles.nftBoxGrid}>
+                {ownedNfts?.map((nft, idx) => (
+                  <div className={styles.nftBox} key={nft.metadata.id.toString()}>
+                    <ThirdwebNftMedia
+                      metadata={nft.metadata}
+                      className={styles.nftMedia}
+                    />
+                    <input
+                    value={nft.metadata.id}
+                    checked=
+              {checkedCheckboxes.some((checkedCheckbox) => checkedCheckbox.value === nft.metadata.id)}
+                    key={idx}
+                    type="checkbox"
+                    className={styles.checkbox}
+                    onChange={() => handleCheckboxChange(nft.metadata.id)}
+                    />
+                    <h3>{nft.metadata.name}</h3>
+                      </div>
+                        ))}
+                    <button
+                    className={`${styles.mainButton} ${styles.spacerBottom}`}
+                    // onClick={} call stake here with token ids
+                    >
+                      Stake
+                    </button>
               </div>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-    )
-  }
-
-  export default Stake
+            </>
+          )}
+        </div>
+      );
+    };
+    
+    export default Stake;

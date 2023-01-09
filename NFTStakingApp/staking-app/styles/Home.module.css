@@ -314,6 +314,11 @@
   }
 }
 
+.checkbox {
+  padding: 10px;
+  width: 40px;
+}
+
 /* beneath 800
 */
 @media only screen and (max-width: 800px) {
