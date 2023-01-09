@@ -60,4 +60,3 @@ contract NFTStaker is Staking721Base {
     }
 
 }
-
