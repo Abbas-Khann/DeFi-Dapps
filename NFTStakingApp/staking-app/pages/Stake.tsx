@@ -2,8 +2,8 @@ import {
     ThirdwebNftMedia,
     useAddress,
     useContract,
-    useContractWrite,
     useOwnedNFTs,
+    Web3Button,
   } from "@thirdweb-dev/react";
   import { ConnectWallet } from "@thirdweb-dev/react";
   import { NFT } from "@thirdweb-dev/sdk";
@@ -21,163 +21,131 @@ import {
     )
     const { contract, isLoading } = useContract(STAKING_CONTRACT_ADDRESS);
     const { data: ownedNfts } = useOwnedNFTs(nftDropContract, address);
-    const { mutateAsync: claimRewards } = useContractWrite(
-        contract,
-        "claimRewards"
-    );
     const [stakedNfts, setStakedNfts] = useState<NFT[]>([]);
     const [claimableRewards, setClaimableRewards] = useState<BigNumber>();
-    const [checkedCheckboxes, setCheckedCheckboxes] = useState<any[]>([])
-    const handleCheckboxChange = (data: any) => {
-        console.log("checkedCheckboxes", checkedCheckboxes)
-        console.log(data)
-        const isChecked = checkedCheckboxes.some(
-          (checkedCheckbox) => checkedCheckbox.value === data.value
-        );
-        console.log(isChecked)
-        if (isChecked) {
-          setCheckedCheckboxes(
-            checkedCheckboxes.filter(
-              (checkedCheckbox) => checkedCheckbox.value !== data.value
-            )
-          );
-        } else {
-          setCheckedCheckboxes(checkedCheckboxes.concat(data));
-        }
-      };
-
-      console.log(stakedNfts, "stakedNFTs")
-      console.log(ownedNfts, "ownedNFts")
+    
     useEffect(() => {
-        if (!contract) return;
+      if (!contract) return;
     
-        async function loadStakedNfts() {
-          const stakedTokens = await contract?.call("getStakeInfo", address);
+      async function loadStakedNfts() {
+        const stakedTokens = await contract?.call("getStakeInfo", address);
     
-          // For each staked token, fetch it from the sdk
-          const stakedNfts = await Promise.all(
-            stakedTokens[0]?.map(async (stakedToken: BigNumber) => {
-              const nft = await nftDropContract?.get(stakedToken.toNumber());
-              return nft;
-            })
-          );
-    
-          setStakedNfts(stakedNfts);
-        }
-    
-        if (address) {
-          loadStakedNfts();
-        }
-      }, [address, contract, nftDropContract]);
-    //   useEffect(() => {
-    //     if (!contract || !address) return;
-    
-    //     async function loadClaimableRewards() {
-    //       const stakeInfo = await contract?.call("getStakeInfo", address);
-    //       setClaimableRewards(stakeInfo[1]);
-    //     }
-    
-    //     loadClaimableRewards();
-    //   }, [address, contract]);
-    
-      async function stakeNft(id: any[]) {
-        if (!address) return;
-        console.log(id)
-        const isApproved = await nftDropContract?.isApproved(
-          address,
-          STAKING_CONTRACT_ADDRESS
+        // For each staked token, fetch it from the sdk
+        const stakedNfts = await Promise.all(
+          stakedTokens[0]?.map(async (stakedToken: BigNumber) => {
+            const nft = await nftDropContract?.get(stakedToken.toNumber());
+            return nft;
+          })
         );
-        if (!isApproved) {
-          await nftDropContract?.setApprovalForAll(STAKING_CONTRACT_ADDRESS, true);
-        }
-        await contract?.call("stakeNft", [id]);
+    
+        setStakedNfts(stakedNfts);
       }
     
-      async function withdraw(id: any[]) {
-        await contract?.call("withdrawNFT", [id]);
+      if (address) {
+        loadStakedNfts();
       }
+    }, [address, contract, nftDropContract]);
     
-      if (isLoading) {
-        return <div>Loading</div>;
+    // useEffect(() => {
+    //   if (!contract || !address) return;
+    
+    //   async function loadClaimableRewards() {
+    //     const stakeInfo = await contract?.call("getStakeInfo", address);
+    //     setClaimableRewards(stakeInfo[1]);
+    //   }
+    
+    //   loadClaimableRewards();
+    // }, [address, contract]);
+    
+    async function stakeNft(id: string) {
+      if (!address) return;
+      const isApproved = await nftDropContract?.isApproved(
+        address,
+        STAKING_CONTRACT_ADDRESS
+      );
+      if (!isApproved) {
+        await nftDropContract?.setApprovalForAll(STAKING_CONTRACT_ADDRESS, true);
       }
-
-      console.log("log outside", checkedCheckboxes)
-      
-
-      return (
-        <div className={styles.container}>
-          <h1 className={styles.h1}>Lock Your NFTs and earn rewards</h1>
-          <hr className={`${styles.divider} ${styles.spacerTop}`} />
-          {!address ? (
-            <ConnectWallet />
-          ) : (
-            <>
-              <button
-                className={`${styles.mainButton} ${styles.spacerTop}`}
-                onClick={() => claimRewards([])}
-              >
-                Claim Rewards
-              </button>
+      await contract?.call("stakeNft", [id]);
+    }
     
-              <hr className={`${styles.divider} ${styles.spacerTop}`} />
-              <h2>Your Staked NFTs</h2>
-              <div className={styles.nftBoxGrid}>
-                {stakedNfts?.map((nft, idx) => (
-                  <div className={styles.nftBox} key={nft.metadata.id.toString()}>
-                    {nft?.metadata && (
-                        <ThirdwebNftMedia
-                        metadata={nft.metadata}
-                        className={styles.nftMedia}
-                        />
-                        )}
-                    <input
-                    key={idx}
-                    type="checkbox"
-                    className={styles.checkbox}
-                    onChange={() => handleCheckboxChange(nft.metadata.id)}
-                    />
-                    <h3>{nft.metadata.name}</h3>
-                  </div>
-                ))}
-                    <button
-                      className={`${styles.mainButton} ${styles.spacerBottom}`}
-                      // onClick={} call withdraw here with token ids checked
-                    >
-                      Withdraw
-                    </button>
-              </div>
-              <hr className={`${styles.divider} ${styles.spacerTop}`} />
-              <h2>Your Unstaked NFTs</h2>
-              <div className={styles.nftBoxGrid}>
-                {ownedNfts?.map((nft, idx) => (
-                  <div className={styles.nftBox} key={nft.metadata.id.toString()}>
+    // async function withdraw(id: string) {
+    //   await contract?.call("withdrawNFT", [id]);
+    // }
+    
+    if (isLoading) {
+      return <div>Loading</div>;
+    }
+    
+    return (
+      <div className={styles.container}>
+        <h1 className={styles.h1}>Lock Your NFTs and earn rewards</h1>
+        <hr className={`${styles.divider} ${styles.spacerTop}`} />
+        {!address ? (
+          <ConnectWallet />
+        ) : (
+          <>
+            <Web3Button
+              contractAddress={STAKING_CONTRACT_ADDRESS}
+              action={(contract) => contract.call("claimRewards")}
+            >
+              Claim Rewards
+            </Web3Button>
+    
+            <hr className={`${styles.divider} ${styles.spacerTop}`} />
+            <h2>Your Staked NFTs</h2>
+            <div className={styles.nftBoxGrid}>
+              {stakedNfts?.map((nft, idx) => (
+                <div className={styles.nftBox} key={nft.metadata.id.toString()}>
+                  {nft?.metadata && (
                     <ThirdwebNftMedia
                       metadata={nft.metadata}
                       className={styles.nftMedia}
                     />
-                    <input
-                    value={nft.metadata.id}
-                    checked=
-              {checkedCheckboxes.some((checkedCheckbox) => checkedCheckbox.value === nft.metadata.id)}
-                    key={idx}
-                    type="checkbox"
-                    className={styles.checkbox}
-                    onChange={() => handleCheckboxChange(nft.metadata.id)}
-                    />
-                    <h3>{nft.metadata.name}</h3>
-                      </div>
-                        ))}
-                    <button
+                  )}
+                  <h3>{nft.metadata.name}</h3>
+                </div>
+              ))}
+              <Web3Button
+                contractAddress={STAKING_CONTRACT_ADDRESS}
+                action={(contract) => contract.call("withdrawNFT", [0])}
+                // the param passed should be dynamic numbers in the array which will be the tokenid
+              >
+                Withdraw
+              </Web3Button>
+            </div>
+            <hr className={`${styles.divider} ${styles.spacerTop}`} />
+            <h2>Your Unstaked NFTs</h2>
+            <div className={styles.nftBoxGrid}>
+              {ownedNfts?.map((nft, idx) => (
+                <div className={styles.nftBox} key={nft.metadata.id.toString()}>
+                  <ThirdwebNftMedia
+                    metadata={nft.metadata}
+                    className={styles.nftMedia}
+                  />
+                  <h3>{nft.metadata.name}</h3>
+                  <button
                     className={`${styles.mainButton} ${styles.spacerBottom}`}
+                    onClick={() => stakeNft(nft.metadata.id)}
                     // onClick={} call stake here with token ids
-                    >
-                      Stake
-                    </button>
-              </div>
-            </>
-          )}
-        </div>
-      );
+                  >
+                    Stake
+                  </button>
+                </div>
+              ))}
+              {/* <Web3Button
+                        contractAddress={STAKING_CONTRACT_ADDRESS}
+                        action={(contract) => contract.call("stakeNft", [1])}
+                        // it would be better if we used the stakeNft function created in the useEffect hook for approval of the NFT from the drop contract as well
+                        >
+                          Stake
+                        </Web3Button> */}
+            </div>
+          </>
+        )}
+      </div>
+    );
+    
     };
     
     export default Stake;

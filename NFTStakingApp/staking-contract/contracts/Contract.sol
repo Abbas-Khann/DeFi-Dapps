@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.11;
 
 import "@thirdweb-dev/contracts/base/Staking721Base.sol";
 import "@thirdweb-dev/contracts/token/TokenERC20.sol";
@@ -11,28 +11,31 @@ contract NFTStaker is Staking721Base {
     // User can earn and claim their staking rewards anytime
         
       mapping (uint256 => uint256) public nftLockTime;
+      mapping (uint256 => bool) public nftLocked;
 
       constructor(
-        uint256 _timeUnit,
+        uint128 _timeUnit,
+        uint128 _rewardsPerUnitTime,
         address _nftCollection,
         address _rewardToken
         )
         Staking721Base(
-            uint256(1 days),
-            100,
-            address(_nftCollection),
-            address(_rewardToken) 
+            _timeUnit,
+            _rewardsPerUnitTime,
+            _nftCollection,
+            _rewardToken
         )
     {}
 
     function _stake(uint256[] calldata _tokenIds) internal override {
         super._stake(_tokenIds);
         for (uint i = 0; i < _tokenIds.length; i++) {
-            nftLockTime[_tokenIds[i]] = block.timestamp + 30 days;
+            nftLocked[_tokenIds[i]] = true;
+            nftLockTime[_tokenIds[i]] = block.timestamp + 3 minutes;
         }
     }
 
-     function stakeNft(uint256[] calldata _tokenIds) public {
+     function stakeNFT(uint256[] calldata _tokenIds) public {
         _stake(_tokenIds);
     }
 
@@ -42,21 +45,17 @@ contract NFTStaker is Staking721Base {
             block.timestamp > nftLockTime[_tokenIds[i]],
             "You can't withdraw unless your 30 days are completed!"
             );
+             nftLocked[_tokenIds[i]] = false;
         }
         super._withdraw(_tokenIds);
     }
 
-    function _mintRewards(address _staker, uint256 _rewards) internal override {
-        TokenERC20 tokenContract = TokenERC20(rewardToken);
-        tokenContract.mintTo(_staker, _rewards);
-    }
-
-    function mintRewards(address _staker, uint256 _rewards) public {
-        super._mintRewards(_staker, _rewards);
-    }
-
     function withdrawNFT(uint256[] calldata _tokenIds) public {
         _withdraw(_tokenIds);
+    }
+
+    function _mintRewards(address _staker, uint256 _rewards) internal override {
+        TokenERC20(rewardToken).mintTo(_staker, _rewards);
     }
 
 }
