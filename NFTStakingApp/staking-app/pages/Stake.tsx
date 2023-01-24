@@ -23,6 +23,7 @@ import {
     const { data: ownedNfts } = useOwnedNFTs(nftDropContract, address);
     const [stakedNfts, setStakedNfts] = useState<NFT[]>([]);
     const [claimableRewards, setClaimableRewards] = useState<BigNumber>();
+    console.log(ownedNfts)
     
     useEffect(() => {
       if (!contract) return;
